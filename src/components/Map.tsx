@@ -123,7 +123,15 @@ const Map: React.FC<MapProps> = ({ pois, userLocation, onPOIClick }) => {
     initializeMap();
 
     return () => {
-      map.current?.remove();
+      // Only remove map if it's properly initialized
+      if (map.current && map.current.getCanvas()) {
+        try {
+          map.current.remove();
+        } catch (error) {
+          console.warn('Error removing map:', error);
+        }
+      }
+      map.current = null;
       setMapReady(false);
       // Clean up pulse animation style
       const pulseStyle = document.getElementById('pulse-animation');
@@ -196,10 +204,14 @@ const Map: React.FC<MapProps> = ({ pois, userLocation, onPOIClick }) => {
 
   // Update user location marker
   useEffect(() => {
-    if (!map.current) return;
+    if (!mapReady || !map.current) return;
 
     if (userMarker.current) {
-      userMarker.current.remove();
+      try {
+        userMarker.current.remove();
+      } catch (error) {
+        console.warn('Error removing user marker:', error);
+      }
       userMarker.current = null;
     }
 
@@ -233,7 +245,7 @@ const Map: React.FC<MapProps> = ({ pois, userLocation, onPOIClick }) => {
       // Reset the flag when location is disabled
       hasLocationBeenCentered.current = false;
     }
-  }, [userLocation]);
+  }, [mapReady, userLocation]);
 
   return (
     <div className="relative w-full h-full">

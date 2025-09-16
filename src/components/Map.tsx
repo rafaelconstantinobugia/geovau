@@ -34,6 +34,7 @@ const Map: React.FC<MapProps> = ({ pois, userLocation, onPOIClick }) => {
   const markers = useRef<mapboxgl.Marker[]>([]);
   const userMarker = useRef<mapboxgl.Marker | null>(null);
   const hasLocationBeenCentered = useRef<boolean>(false);
+  const userInteracting = useRef<boolean>(false);
   const [mapReady, setMapReady] = useState<boolean>(false);
   const { t } = useTranslation();
 
@@ -61,7 +62,9 @@ const Map: React.FC<MapProps> = ({ pois, userLocation, onPOIClick }) => {
           container: mapContainer.current!,
           style: 'mapbox://styles/mapbox/dark-v11',
           center: [-9.2200, 39.4070], // Centered on Vau/Lagoa de Óbidos
-          zoom: 14,
+          zoom: 15,
+          minZoom: 14, // Force detail before interacting
+          maxZoom: 19,
           pitch: 0,
         });
 
@@ -104,6 +107,26 @@ const Map: React.FC<MapProps> = ({ pois, userLocation, onPOIClick }) => {
         // Wait for map to be fully loaded before setting as ready
         map.current.on('load', () => {
           setMapReady(true);
+        });
+
+        // Track user interaction to pause location following
+        map.current.on('mousedown', () => {
+          userInteracting.current = true;
+        });
+        
+        map.current.on('dragstart', () => {
+          userInteracting.current = true;
+        });
+        
+        map.current.on('touchstart', () => {
+          userInteracting.current = true;
+        });
+        
+        map.current.on('moveend', () => {
+          // Reset interaction flag after movement stops
+          setTimeout(() => {
+            userInteracting.current = false;
+          }, 2000);
         });
 
       } catch (error) {
@@ -155,13 +178,13 @@ const Map: React.FC<MapProps> = ({ pois, userLocation, onPOIClick }) => {
 
     // Add POI markers
     pois.forEach(poi => {
-      // Create custom marker element
+      // Create custom marker element with precise anchoring
       const el = document.createElement('div');
       el.className = 'poi-marker';
       el.style.cssText = `
         background-color: #ff6a00;
-        width: 30px;
-        height: 30px;
+        width: 32px;
+        height: 32px;
         border-radius: 50%;
         border: 3px solid #ffffff;
         cursor: pointer;
@@ -169,6 +192,9 @@ const Map: React.FC<MapProps> = ({ pois, userLocation, onPOIClick }) => {
         transition: all 0.2s ease;
         position: relative;
         z-index: 1000;
+        transform: translate(-50%, -50%);
+        margin: 0;
+        padding: 0;
       `;
       
       el.addEventListener('mouseenter', () => {
@@ -181,7 +207,10 @@ const Map: React.FC<MapProps> = ({ pois, userLocation, onPOIClick }) => {
         el.style.boxShadow = '0 4px 12px rgba(255, 106, 0, 0.6)';
       });
 
-      const marker = new mapboxgl.Marker(el)
+      const marker = new mapboxgl.Marker({
+        element: el,
+        anchor: 'center'
+      })
         .setLngLat([poi.lng, poi.lat])
         .addTo(map.current!);
 
@@ -218,24 +247,30 @@ const Map: React.FC<MapProps> = ({ pois, userLocation, onPOIClick }) => {
     }
 
     if (userLocation) {
-      // Create custom user marker
+      // Create custom user marker with precise anchoring
       const el = document.createElement('div');
       el.style.cssText = `
         background-color: hsl(120 100% 50%);
-        width: 16px;
-        height: 16px;
+        width: 18px;
+        height: 18px;
         border-radius: 50%;
         border: 3px solid hsl(0 0% 100%);
         box-shadow: 0 0 0 3px rgba(0, 255, 0, 0.3);
         animation: pulse 2s infinite;
+        transform: translate(-50%, -50%);
+        margin: 0;
+        padding: 0;
       `;
 
-      userMarker.current = new mapboxgl.Marker(el)
+      userMarker.current = new mapboxgl.Marker({
+        element: el,
+        anchor: 'center'
+      })
         .setLngLat([userLocation.lng, userLocation.lat])
         .addTo(map.current);
 
-      // Only center map on user location the first time
-      if (!hasLocationBeenCentered.current) {
+      // Only center map on user location if not interacting and first time
+      if (!hasLocationBeenCentered.current && !userInteracting.current) {
         map.current.flyTo({
           center: [userLocation.lng, userLocation.lat],
           zoom: 16,

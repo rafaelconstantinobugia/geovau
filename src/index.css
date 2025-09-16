@@ -68,4 +68,9 @@
     height: 100%;
     overflow-x: hidden;
   }
+
+  /* Map stability fixes - prevent transform issues */
+  .mapboxgl-map, .mapboxgl-canvas-container, .mapboxgl-canvas {
+    transform: none !important;
+  }
 }

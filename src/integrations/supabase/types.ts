@@ -80,8 +80,17 @@ export type Database = {
           radius_m: number
           slug: string | null
           tags: string[] | null
+          tags_en: string[] | null
+          tags_es: string[] | null
+          tags_fr: string[] | null
           text: string | null
+          text_en: string | null
+          text_es: string | null
+          text_fr: string | null
           title: string
+          title_en: string | null
+          title_es: string | null
+          title_fr: string | null
           updated_at: string
         }
         Insert: {
@@ -95,8 +104,17 @@ export type Database = {
           radius_m?: number
           slug?: string | null
           tags?: string[] | null
+          tags_en?: string[] | null
+          tags_es?: string[] | null
+          tags_fr?: string[] | null
           text?: string | null
+          text_en?: string | null
+          text_es?: string | null
+          text_fr?: string | null
           title: string
+          title_en?: string | null
+          title_es?: string | null
+          title_fr?: string | null
           updated_at?: string
         }
         Update: {
@@ -110,8 +128,17 @@ export type Database = {
           radius_m?: number
           slug?: string | null
           tags?: string[] | null
+          tags_en?: string[] | null
+          tags_es?: string[] | null
+          tags_fr?: string[] | null
           text?: string | null
+          text_en?: string | null
+          text_es?: string | null
+          text_fr?: string | null
           title?: string
+          title_en?: string | null
+          title_es?: string | null
+          title_fr?: string | null
           updated_at?: string
         }
         Relationships: []
@@ -128,8 +155,17 @@ export type Database = {
           radius_m: number | null
           slug: string | null
           tags: string[] | null
+          tags_en: string[] | null
+          tags_es: string[] | null
+          tags_fr: string[] | null
           text: string | null
+          text_en: string | null
+          text_es: string | null
+          text_fr: string | null
           title: string | null
+          title_en: string | null
+          title_es: string | null
+          title_fr: string | null
         }
         Insert: {
           audio_url?: string | null
@@ -140,8 +176,17 @@ export type Database = {
           radius_m?: number | null
           slug?: string | null
           tags?: string[] | null
+          tags_en?: string[] | null
+          tags_es?: string[] | null
+          tags_fr?: string[] | null
           text?: string | null
+          text_en?: string | null
+          text_es?: string | null
+          text_fr?: string | null
           title?: string | null
+          title_en?: string | null
+          title_es?: string | null
+          title_fr?: string | null
         }
         Update: {
           audio_url?: string | null
@@ -152,8 +197,17 @@ export type Database = {
           radius_m?: number | null
           slug?: string | null
           tags?: string[] | null
+          tags_en?: string[] | null
+          tags_es?: string[] | null
+          tags_fr?: string[] | null
           text?: string | null
+          text_en?: string | null
+          text_es?: string | null
+          text_fr?: string | null
           title?: string | null
+          title_en?: string | null
+          title_es?: string | null
+          title_fr?: string | null
         }
         Relationships: []
       }
@@ -163,6 +217,21 @@ export type Database = {
         Args: { ip_in: unknown }
         Returns: {
           count: number
+        }[]
+      }
+      get_pois_localized: {
+        Args: { lang?: string }
+        Returns: {
+          audio_url: string
+          id: string
+          image_url: string
+          lat: number
+          lng: number
+          radius_m: number
+          slug: string
+          tags: string[]
+          text: string
+          title: string
         }[]
       }
     }

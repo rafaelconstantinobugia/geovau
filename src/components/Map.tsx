@@ -33,6 +33,7 @@ const Map: React.FC<MapProps> = ({ pois, userLocation, onPOIClick }) => {
   const map = useRef<mapboxgl.Map | null>(null);
   const markers = useRef<mapboxgl.Marker[]>([]);
   const userMarker = useRef<mapboxgl.Marker | null>(null);
+  const hasLocationBeenCentered = useRef<boolean>(false);
   const { t } = useTranslation();
 
   useEffect(() => {
@@ -202,12 +203,18 @@ const Map: React.FC<MapProps> = ({ pois, userLocation, onPOIClick }) => {
         .setLngLat([userLocation.lng, userLocation.lat])
         .addTo(map.current);
 
-      // Center map on user location
-      map.current.flyTo({
-        center: [userLocation.lng, userLocation.lat],
-        zoom: 16,
-        duration: 1000
-      });
+      // Only center map on user location the first time
+      if (!hasLocationBeenCentered.current) {
+        map.current.flyTo({
+          center: [userLocation.lng, userLocation.lat],
+          zoom: 16,
+          duration: 1000
+        });
+        hasLocationBeenCentered.current = true;
+      }
+    } else {
+      // Reset the flag when location is disabled
+      hasLocationBeenCentered.current = false;
     }
   }, [userLocation]);
 

@@ -172,6 +172,14 @@ export default function Backoffice() {
     return Object.keys(errors).length === 0;
   }, [formData]);
 
+  // Reset form to initial state
+  const resetForm = useCallback(() => {
+    setEditingPoi(null);
+    setFormData(getInitialFormState());
+    setValidationErrors({});
+    setFormKey(prev => prev + 1); // Force re-render
+  }, []);
+
   const handleSavePoi = useCallback(async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     
@@ -227,7 +235,7 @@ export default function Backoffice() {
     } finally {
       setSaving(false);
     }
-  }, [formData, editingPoi, validateForm, processTags, apiCall, toast, loadPOIs]);
+  }, [formData, editingPoi, validateForm, processTags, apiCall, toast, loadPOIs, resetForm]);
 
   const handleDeletePoi = useCallback(async (poi: POI) => {
     if (!confirm(`Apagar "${poi.title}"?`)) return;
@@ -255,15 +263,7 @@ export default function Backoffice() {
     } finally {
       setLoading(false);
     }
-  }, [apiCall, toast, loadPOIs, editingPoi]);
-
-  // Reset form to initial state
-  const resetForm = useCallback(() => {
-    setEditingPoi(null);
-    setFormData(getInitialFormState());
-    setValidationErrors({});
-    setFormKey(prev => prev + 1); // Force re-render
-  }, []);
+  }, [apiCall, toast, loadPOIs, editingPoi, resetForm]);
 
   // Fill form with POI data for editing
   const fillForm = useCallback((poi: POI) => {

@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next';
 import Map from "@/components/Map";
 import POICard from "@/components/POICard";
 import LanguageSelector from "@/components/LanguageSelector";
+import LocationBanner from "@/components/LocationBanner";
 import { supabase } from "@/integrations/supabase/client";
 
 interface POI {
@@ -48,6 +49,7 @@ const App = () => {
   const [availableTags, setAvailableTags] = useState<string[]>([]);
   const [watchId, setWatchId] = useState<number | null>(null);
   const [triggeredPOIs, setTriggeredPOIs] = useState<Set<string>>(new Set());
+  const [showLocationBanner, setShowLocationBanner] = useState(true);
   
   const { toast } = useToast();
   const { t, i18n } = useTranslation();
@@ -159,8 +161,9 @@ const App = () => {
         lng: position.coords.longitude
       };
       setUserLocation(newLocation);
-      setLocationEnabled(true);
-      console.log('Location enabled:', newLocation);
+    setLocationEnabled(true);
+    setShowLocationBanner(true);
+    console.log('Location enabled:', newLocation);
       
       toast({
         title: t('locationEnabled'),
@@ -207,6 +210,7 @@ const App = () => {
   const enableDemoMode = () => {
     setUserLocation(DEMO_LOCATION);
     setLocationEnabled(true);
+    setShowLocationBanner(true);
     
     // Find the demo POI and open it
     const demoPOI = pois.find(poi => poi.slug === 'covao-mezaranhos');
@@ -332,6 +336,12 @@ const App = () => {
           onOpen={() => handleCardOpen(selectedPOI)}
         />
       )}
+
+      {/* Location Banner */}
+      <LocationBanner
+        isVisible={locationEnabled && showLocationBanner}
+        onDismiss={() => setShowLocationBanner(false)}
+      />
     </div>
   );
 };

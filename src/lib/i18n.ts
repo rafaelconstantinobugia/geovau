@@ -49,7 +49,12 @@ const resources = {
       
       // Language selector
       "selectLanguage": "Selecionar idioma",
-      "language": "Idioma"
+      "language": "Idioma",
+      
+      // Location banner
+      "locationTracking": "A localização está a ser utilizada",
+      "locationTrackingDesc": "A aplicação está a monitorizar a tua posição",
+      "dismiss": "Dispensar"
     }
   },
   en: {
@@ -97,7 +102,12 @@ const resources = {
       
       // Language selector
       "selectLanguage": "Select language",
-      "language": "Language"
+      "language": "Language",
+      
+      // Location banner
+      "locationTracking": "Location is being used",
+      "locationTrackingDesc": "The app is monitoring your position",
+      "dismiss": "Dismiss"
     }
   },
   es: {
@@ -145,7 +155,12 @@ const resources = {
       
       // Language selector
       "selectLanguage": "Seleccionar idioma",
-      "language": "Idioma"
+      "language": "Idioma",
+      
+      // Location banner
+      "locationTracking": "Se está utilizando la ubicación",
+      "locationTrackingDesc": "La aplicación está monitoreando tu posición",
+      "dismiss": "Descartar"
     }
   },
   fr: {
@@ -193,7 +208,12 @@ const resources = {
       
       // Language selector
       "selectLanguage": "Sélectionner la langue",
-      "language": "Langue"
+      "language": "Langue",
+      
+      // Location banner
+      "locationTracking": "La localisation est utilisée",
+      "locationTrackingDesc": "L'application surveille votre position",
+      "dismiss": "Ignorer"
     }
   }
 };

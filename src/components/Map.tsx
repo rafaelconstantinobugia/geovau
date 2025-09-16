@@ -111,7 +111,9 @@ const Map: React.FC<MapProps> = ({ pois, userLocation, onPOIClick }) => {
 
   // Update POI markers
   useEffect(() => {
-    if (!map.current) return;
+    if (!map.current) {
+      return;
+    }
 
     // Clear existing markers
     markers.current.forEach(marker => marker.remove());
@@ -123,24 +125,26 @@ const Map: React.FC<MapProps> = ({ pois, userLocation, onPOIClick }) => {
       const el = document.createElement('div');
       el.className = 'poi-marker';
       el.style.cssText = `
-        background-color: hsl(24 100% 52%);
-        width: 24px;
-        height: 24px;
+        background-color: #ff6a00;
+        width: 30px;
+        height: 30px;
         border-radius: 50%;
-        border: 2px solid hsl(0 0% 100%);
+        border: 3px solid #ffffff;
         cursor: pointer;
-        box-shadow: 0 2px 8px rgba(255, 106, 0, 0.4);
+        box-shadow: 0 4px 12px rgba(255, 106, 0, 0.6);
         transition: all 0.2s ease;
+        position: relative;
+        z-index: 1000;
       `;
       
       el.addEventListener('mouseenter', () => {
-        el.style.transform = 'scale(1.2)';
-        el.style.boxShadow = '0 4px 16px rgba(255, 106, 0, 0.6)';
+        el.style.transform = 'scale(1.3)';
+        el.style.boxShadow = '0 6px 20px rgba(255, 106, 0, 0.8)';
       });
       
       el.addEventListener('mouseleave', () => {
         el.style.transform = 'scale(1)';
-        el.style.boxShadow = '0 2px 8px rgba(255, 106, 0, 0.4)';
+        el.style.boxShadow = '0 4px 12px rgba(255, 106, 0, 0.6)';
       });
 
       const marker = new mapboxgl.Marker(el)

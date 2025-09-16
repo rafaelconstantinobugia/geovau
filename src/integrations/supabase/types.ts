@@ -30,7 +30,7 @@ export type Database = {
         Insert: {
           created_at?: string
           dist_m?: number | null
-          id?: number
+          id?: never
           ip?: unknown | null
           kind: string
           lat?: number | null
@@ -42,7 +42,7 @@ export type Database = {
         Update: {
           created_at?: string
           dist_m?: number | null
-          id?: number
+          id?: never
           ip?: unknown | null
           kind?: string
           lat?: number | null
@@ -75,8 +75,10 @@ export type Database = {
           image_url: string | null
           lat: number
           lng: number
+          owner: string | null
           published: boolean
           radius_m: number
+          slug: string | null
           tags: string[] | null
           text: string | null
           title: string
@@ -88,8 +90,10 @@ export type Database = {
           image_url?: string | null
           lat: number
           lng: number
+          owner?: string | null
           published?: boolean
           radius_m?: number
+          slug?: string | null
           tags?: string[] | null
           text?: string | null
           title: string
@@ -101,8 +105,10 @@ export type Database = {
           image_url?: string | null
           lat?: number
           lng?: number
+          owner?: string | null
           published?: boolean
           radius_m?: number
+          slug?: string | null
           tags?: string[] | null
           text?: string | null
           title?: string
@@ -120,6 +126,7 @@ export type Database = {
           lat: number | null
           lng: number | null
           radius_m: number | null
+          slug: string | null
           tags: string[] | null
           text: string | null
           title: string | null
@@ -131,6 +138,7 @@ export type Database = {
           lat?: number | null
           lng?: number | null
           radius_m?: number | null
+          slug?: string | null
           tags?: string[] | null
           text?: string | null
           title?: string | null
@@ -142,6 +150,7 @@ export type Database = {
           lat?: number | null
           lng?: number | null
           radius_m?: number | null
+          slug?: string | null
           tags?: string[] | null
           text?: string | null
           title?: string | null

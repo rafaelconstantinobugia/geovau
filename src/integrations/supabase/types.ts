@@ -59,6 +59,13 @@ export type Database = {
             referencedRelation: "pois"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "hits_poi_id_fkey"
+            columns: ["poi_id"]
+            isOneToOne: false
+            referencedRelation: "pois_public"
+            referencedColumns: ["id"]
+          },
         ]
       }
       pois: {
@@ -111,28 +118,51 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      pois_public: {
+        Row: {
+          audio_url: string | null
+          id: string | null
+          image_url: string | null
+          lat: number | null
+          lng: number | null
+          radius_m: number | null
+          slug: string | null
+          tags: string[] | null
+          text: string | null
+          title: string | null
+        }
+        Insert: {
+          audio_url?: string | null
+          id?: string | null
+          image_url?: string | null
+          lat?: number | null
+          lng?: number | null
+          radius_m?: number | null
+          slug?: string | null
+          tags?: string[] | null
+          text?: string | null
+          title?: string | null
+        }
+        Update: {
+          audio_url?: string | null
+          id?: string | null
+          image_url?: string | null
+          lat?: number | null
+          lng?: number | null
+          radius_m?: number | null
+          slug?: string | null
+          tags?: string[] | null
+          text?: string | null
+          title?: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       count_hits_ip_minute: {
         Args: { ip_in: unknown }
         Returns: {
           count: number
-        }[]
-      }
-      get_pois_public: {
-        Args: Record<PropertyKey, never>
-        Returns: {
-          audio_url: string
-          id: string
-          image_url: string
-          lat: number
-          lng: number
-          radius_m: number
-          slug: string
-          tags: string[]
-          text: string
-          title: string
         }[]
       }
     }

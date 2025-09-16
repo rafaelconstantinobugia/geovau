@@ -7,7 +7,9 @@ import Map from "@/components/Map";
 import POICard from "@/components/POICard";
 import LanguageSelector from "@/components/LanguageSelector";
 import LocationBanner from "@/components/LocationBanner";
+import CreatePOIDialog from "@/components/CreatePOIDialog";
 import { supabase } from "@/integrations/supabase/client";
+import { Plus } from "lucide-react";
 
 interface POI {
   id: string;
@@ -82,45 +84,45 @@ const App = () => {
   }, [userLocation]);
 
   // Fetch POIs from Supabase using localized function
-  useEffect(() => {
-    const fetchPOIs = async () => {
-      try {
-        const { data, error } = await supabase
-          .rpc('get_pois_localized', { lang: i18n.language });
-        
-        if (error) {
-          console.error('Error fetching POIs:', error);
-          toast({
-            title: t('error'),
-            description: t('loadPOIError'),
-            variant: "destructive"
-          });
-          return;
-        }
-
-        if (data) {
-          setPois(data);
-          console.log(`Loaded ${data.length} POIs`);
-          
-          // Extract unique tags
-          const tags = new Set<string>();
-          data.forEach(poi => {
-            poi.tags?.forEach(tag => tags.add(tag));
-          });
-          setAvailableTags(Array.from(tags));
-        }
-      } catch (error) {
-        console.error('Failed to fetch POIs:', error);
+  const fetchPOIs = useCallback(async () => {
+    try {
+      const { data, error } = await supabase
+        .rpc('get_pois_localized', { lang: i18n.language });
+      
+      if (error) {
+        console.error('Error fetching POIs:', error);
         toast({
           title: t('error'),
-          description: t('connectionError'),
+          description: t('loadPOIError'),
           variant: "destructive"
         });
+        return;
       }
-    };
 
-    fetchPOIs();
+      if (data) {
+        setPois(data);
+        console.log(`Loaded ${data.length} POIs`);
+        
+        // Extract unique tags
+        const tags = new Set<string>();
+        data.forEach(poi => {
+          poi.tags?.forEach(tag => tags.add(tag));
+        });
+        setAvailableTags(Array.from(tags));
+      }
+    } catch (error) {
+      console.error('Failed to fetch POIs:', error);
+      toast({
+        title: t('error'),
+        description: t('connectionError'),
+        variant: "destructive"
+      });
+    }
   }, [toast, t, i18n.language]);
+
+  useEffect(() => {
+    fetchPOIs();
+  }, [fetchPOIs]);
 
   // Check for POIs within radius when location changes
   useEffect(() => {
@@ -306,6 +308,20 @@ const App = () => {
               >
                 {t('demoMode')}
               </Button>
+            )}
+            {locationEnabled && (
+              <CreatePOIDialog 
+                userLocation={userLocation} 
+                onPOICreated={fetchPOIs}
+              >
+                <Button 
+                  size="sm"
+                  className="bg-secondary text-secondary-foreground hover:bg-secondary/80"
+                >
+                  <Plus className="h-4 w-4 mr-2" />
+                  {t('createPOIHere')}
+                </Button>
+              </CreatePOIDialog>
             )}
             <LanguageSelector />
           </div>

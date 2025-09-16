@@ -54,7 +54,30 @@ const resources = {
       // Location banner
       "locationTracking": "A localização está a ser utilizada",
       "locationTrackingDesc": "A aplicação está a monitorizar a tua posição",
-      "dismiss": "Dispensar"
+      "dismiss": "Dispensar",
+      
+      // Create POI
+      "createPOIHere": "Criar POI aqui",
+      "createPOI": "Criar ponto de interesse",
+      "title": "Título",
+      "description": "Descrição",
+      "radius": "Raio",
+      "imageURL": "URL da imagem",
+      "audioURL": "URL do áudio",
+      "tags": "Tags",
+      "location": "Localização",
+      "enterTitle": "Introduz o título",
+      "enterDescription": "Introduz a descrição",
+      "addTag": "Adicionar tag",
+      "add": "Adicionar",
+      "cancel": "Cancelar",
+      "create": "Criar",
+      "creating": "A criar...",
+      "success": "Sucesso",
+      "titleRequired": "O título é obrigatório",
+      "locationRequiredForPOI": "Localização necessária para criar POI",
+      "createPOIError": "Erro ao criar ponto de interesse",
+      "poiCreatedSuccess": "Ponto de interesse criado com sucesso"
     }
   },
   en: {
@@ -107,7 +130,30 @@ const resources = {
       // Location banner
       "locationTracking": "Location is being used",
       "locationTrackingDesc": "The app is monitoring your position",
-      "dismiss": "Dismiss"
+      "dismiss": "Dismiss",
+      
+      // Create POI
+      "createPOIHere": "Create POI here",
+      "createPOI": "Create point of interest",
+      "title": "Title",
+      "description": "Description",
+      "radius": "Radius",
+      "imageURL": "Image URL",
+      "audioURL": "Audio URL",
+      "tags": "Tags",
+      "location": "Location",
+      "enterTitle": "Enter title",
+      "enterDescription": "Enter description",
+      "addTag": "Add tag",
+      "add": "Add",
+      "cancel": "Cancel",
+      "create": "Create",
+      "creating": "Creating...",
+      "success": "Success",
+      "titleRequired": "Title is required",
+      "locationRequiredForPOI": "Location required to create POI",
+      "createPOIError": "Error creating point of interest",
+      "poiCreatedSuccess": "Point of interest created successfully"
     }
   },
   es: {
@@ -160,7 +206,30 @@ const resources = {
       // Location banner
       "locationTracking": "Se está utilizando la ubicación",
       "locationTrackingDesc": "La aplicación está monitoreando tu posición",
-      "dismiss": "Descartar"
+      "dismiss": "Descartar",
+      
+      // Create POI
+      "createPOIHere": "Crear POI aquí",
+      "createPOI": "Crear punto de interés",
+      "title": "Título",
+      "description": "Descripción",
+      "radius": "Radio",
+      "imageURL": "URL de imagen",
+      "audioURL": "URL de audio",
+      "tags": "Etiquetas",
+      "location": "Ubicación",
+      "enterTitle": "Introduce el título",
+      "enterDescription": "Introduce la descripción",
+      "addTag": "Añadir etiqueta",
+      "add": "Añadir",
+      "cancel": "Cancelar",
+      "create": "Crear",
+      "creating": "Creando...",
+      "success": "Éxito",
+      "titleRequired": "El título es obligatorio",
+      "locationRequiredForPOI": "Ubicación necesaria para crear POI",
+      "createPOIError": "Error al crear punto de interés",
+      "poiCreatedSuccess": "Punto de interés creado con éxito"
     }
   },
   fr: {
@@ -213,7 +282,30 @@ const resources = {
       // Location banner
       "locationTracking": "La localisation est utilisée",
       "locationTrackingDesc": "L'application surveille votre position",
-      "dismiss": "Ignorer"
+      "dismiss": "Ignorer",
+      
+      // Create POI
+      "createPOIHere": "Créer POI ici",
+      "createPOI": "Créer point d'intérêt",
+      "title": "Titre",
+      "description": "Description",
+      "radius": "Rayon",
+      "imageURL": "URL de l'image",
+      "audioURL": "URL audio",
+      "tags": "Tags",
+      "location": "Localisation",
+      "enterTitle": "Entrez le titre",
+      "enterDescription": "Entrez la description",
+      "addTag": "Ajouter tag",
+      "add": "Ajouter",
+      "cancel": "Annuler",
+      "create": "Créer",
+      "creating": "Création...",
+      "success": "Succès",
+      "titleRequired": "Le titre est obligatoire",
+      "locationRequiredForPOI": "Localisation nécessaire pour créer POI",
+      "createPOIError": "Erreur lors de la création du point d'intérêt",
+      "poiCreatedSuccess": "Point d'intérêt créé avec succès"
     }
   }
 };

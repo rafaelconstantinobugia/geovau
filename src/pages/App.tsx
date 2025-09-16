@@ -155,20 +155,28 @@ const App = () => {
       return;
     }
 
+    // Show banner when location is first enabled
+    setShowLocationBanner(true);
+    let isFirstPosition = true;
+
     const successCallback = (position: GeolocationPosition) => {
       const newLocation = {
         lat: position.coords.latitude,
         lng: position.coords.longitude
       };
       setUserLocation(newLocation);
-    setLocationEnabled(true);
-    setShowLocationBanner(true);
-    console.log('Location enabled:', newLocation);
       
-      toast({
-        title: t('locationEnabled'),
-        description: t('locationEnabledDesc')
-      });
+      // Only set location enabled and show toast on first position update
+      if (isFirstPosition) {
+        setLocationEnabled(true);
+        console.log('Location enabled:', newLocation);
+        
+        toast({
+          title: t('locationEnabled'),
+          description: t('locationEnabledDesc')
+        });
+        isFirstPosition = false;
+      }
     };
 
     const errorCallback = (error: GeolocationPositionError) => {
@@ -199,6 +207,7 @@ const App = () => {
     setLocationEnabled(false);
     setUserLocation(null);
     setTriggeredPOIs(new Set());
+    setShowLocationBanner(false); // Reset banner state when location is disabled
     console.log('Location disabled');
     
     toast({

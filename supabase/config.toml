@@ -1,1 +1,4 @@
 project_id = "ruivacnxajjtywreghpl"
+
+[functions.admin-poi]
+verify_jwt = false

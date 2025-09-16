@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import { useTranslation } from 'react-i18next';
@@ -34,6 +34,7 @@ const Map: React.FC<MapProps> = ({ pois, userLocation, onPOIClick }) => {
   const markers = useRef<mapboxgl.Marker[]>([]);
   const userMarker = useRef<mapboxgl.Marker | null>(null);
   const hasLocationBeenCentered = useRef<boolean>(false);
+  const [mapReady, setMapReady] = useState<boolean>(false);
   const { t } = useTranslation();
 
   useEffect(() => {
@@ -86,6 +87,23 @@ const Map: React.FC<MapProps> = ({ pois, userLocation, onPOIClick }) => {
           })
         );
 
+        // Add pulse animation style once
+        if (!document.getElementById('pulse-animation')) {
+          const style = document.createElement('style');
+          style.id = 'pulse-animation';
+          style.textContent = `
+            @keyframes pulse {
+              0% { box-shadow: 0 0 0 0 rgba(0, 255, 0, 0.4); }
+              70% { box-shadow: 0 0 0 8px rgba(0, 255, 0, 0); }
+              100% { box-shadow: 0 0 0 0 rgba(0, 255, 0, 0); }
+            }
+          `;
+          document.head.appendChild(style);
+        }
+
+        // Set map as ready
+        setMapReady(true);
+
       } catch (error) {
         console.error('Failed to initialize map:', error);
         // Show fallback message
@@ -106,12 +124,18 @@ const Map: React.FC<MapProps> = ({ pois, userLocation, onPOIClick }) => {
 
     return () => {
       map.current?.remove();
+      setMapReady(false);
+      // Clean up pulse animation style
+      const pulseStyle = document.getElementById('pulse-animation');
+      if (pulseStyle) {
+        pulseStyle.remove();
+      }
     };
   }, []);
 
   // Update POI markers
   useEffect(() => {
-    if (!map.current) {
+    if (!mapReady || !map.current || pois.length === 0) {
       return;
     }
 
@@ -168,7 +192,7 @@ const Map: React.FC<MapProps> = ({ pois, userLocation, onPOIClick }) => {
       marker.setPopup(popup);
       markers.current.push(marker);
     });
-  }, [pois, onPOIClick]);
+  }, [mapReady, pois, onPOIClick, t]);
 
   // Update user location marker
   useEffect(() => {
@@ -191,17 +215,6 @@ const Map: React.FC<MapProps> = ({ pois, userLocation, onPOIClick }) => {
         box-shadow: 0 0 0 3px rgba(0, 255, 0, 0.3);
         animation: pulse 2s infinite;
       `;
-
-      // Add pulse animation
-      const style = document.createElement('style');
-      style.textContent = `
-        @keyframes pulse {
-          0% { box-shadow: 0 0 0 0 rgba(0, 255, 0, 0.4); }
-          70% { box-shadow: 0 0 0 8px rgba(0, 255, 0, 0); }
-          100% { box-shadow: 0 0 0 0 rgba(0, 255, 0, 0); }
-        }
-      `;
-      document.head.appendChild(style);
 
       userMarker.current = new mapboxgl.Marker(el)
         .setLngLat([userLocation.lng, userLocation.lat])

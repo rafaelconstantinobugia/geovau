@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
-import { Trash2, Edit, RefreshCw, Eye, EyeOff } from 'lucide-react';
+import { Trash2, Edit, RefreshCw, Eye, EyeOff, AlertCircle } from 'lucide-react';
 
 interface POI {
   id: string;
@@ -34,17 +34,47 @@ interface POI {
 
 const API_URL = 'https://ruivacnxajjtywreghpl.supabase.co/functions/v1/admin-poi';
 
+// Initial form state
+const getInitialFormState = (): Partial<POI> => ({
+  id: '',
+  title: '',
+  lat: 0,
+  lng: 0,
+  radius_m: 60,
+  text: '',
+  image_url: '',
+  audio_url: '',
+  tags: [],
+  published: true,
+  title_en: '',
+  title_es: '',
+  title_fr: '',
+  text_en: '',
+  text_es: '',
+  text_fr: '',
+  tags_en: [],
+  tags_es: [],
+  tags_fr: []
+});
+
 export default function Backoffice() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [password, setPassword] = useState('');
+  const [authPassword, setAuthPassword] = useState('');
   const [pois, setPois] = useState<POI[]>([]);
   const [loading, setLoading] = useState(false);
+  const [saving, setSaving] = useState(false);
   const [editingPoi, setEditingPoi] = useState<POI | null>(null);
+  const [formData, setFormData] = useState<Partial<POI>>(getInitialFormState());
+  const [formKey, setFormKey] = useState(0); // For forcing re-render
+  const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
   const { toast } = useToast();
 
-  const authHeader = isAuthenticated ? `Basic ${btoa(`admin:${password}`)}` : '';
+  // Store auth header securely
+  const authHeader = useMemo(() => 
+    isAuthenticated ? `Basic ${btoa(`admin:${authPassword}`)}` : ''
+  , [isAuthenticated, authPassword]);
 
-  const apiCall = async (method: string, body?: any) => {
+  const apiCall = useCallback(async (method: string, body?: any) => {
     const response = await fetch(API_URL, {
       method,
       headers: {
@@ -59,13 +89,13 @@ export default function Backoffice() {
       throw new Error(data.error || 'Erro na operação');
     }
     return data;
-  };
+  }, [authHeader]);
 
-  const handleLogin = async () => {
+  const handleLogin = useCallback(async () => {
     try {
       setLoading(true);
       // Test authentication by making a simple GET request
-      const tempAuthHeader = `Basic ${btoa(`admin:${password}`)}`;
+      const tempAuthHeader = `Basic ${btoa(`admin:${authPassword}`)}`;
       const response = await fetch(API_URL, {
         method: 'GET',
         headers: {
@@ -76,6 +106,7 @@ export default function Backoffice() {
 
       if (response.ok) {
         setIsAuthenticated(true);
+        // Clear password from login form but keep for auth
         await loadPOIs();
         toast({
           title: "Login realizado com sucesso",
@@ -93,9 +124,9 @@ export default function Backoffice() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [authPassword]);
 
-  const loadPOIs = async () => {
+  const loadPOIs = useCallback(async () => {
     try {
       setLoading(true);
       const { data } = await apiCall('GET');
@@ -109,36 +140,74 @@ export default function Backoffice() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [apiCall, toast]);
 
-  const handleSavePoi = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    const formData = new FormData(e.currentTarget);
+  // Helper function to process tags
+  const processTags = useCallback((tagString: string): string[] => {
+    if (!tagString) return [];
+    return tagString.split(',').map(s => s.trim()).filter(Boolean);
+  }, []);
+
+  // Form validation
+  const validateForm = useCallback((): boolean => {
+    const errors: Record<string, string> = {};
     
+    if (!formData.title?.trim()) {
+      errors.title = 'Título é obrigatório';
+    }
+    
+    if (!formData.lat || isNaN(formData.lat)) {
+      errors.lat = 'Latitude deve ser um número válido';
+    }
+    
+    if (!formData.lng || isNaN(formData.lng)) {
+      errors.lng = 'Longitude deve ser um número válido';
+    }
+    
+    if (formData.radius_m && (isNaN(formData.radius_m) || formData.radius_m <= 0)) {
+      errors.radius_m = 'Raio deve ser um número positivo';
+    }
+
+    setValidationErrors(errors);
+    return Object.keys(errors).length === 0;
+  }, [formData]);
+
+  const handleSavePoi = useCallback(async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    
+    if (!validateForm()) {
+      toast({
+        title: "Erro de validação",
+        description: "Por favor, corrija os erros no formulário",
+        variant: "destructive",
+      });
+      return;
+    }
+
     const payload: Partial<POI> = {
-      id: formData.get('id') as string || undefined,
-      title: formData.get('title') as string,
-      lat: Number(formData.get('lat')),
-      lng: Number(formData.get('lng')),
-      radius_m: Number(formData.get('radius_m') || 60),
-      text: formData.get('text') as string || null,
-      image_url: formData.get('image_url') as string || null,
-      audio_url: formData.get('audio_url') as string || null,
-      tags: (formData.get('tags') as string || '').split(',').map(s => s.trim()).filter(Boolean),
-      published: formData.get('published') === 'on',
-      title_en: formData.get('title_en') as string || null,
-      title_es: formData.get('title_es') as string || null,
-      title_fr: formData.get('title_fr') as string || null,
-      text_en: formData.get('text_en') as string || null,
-      text_es: formData.get('text_es') as string || null,
-      text_fr: formData.get('text_fr') as string || null,
-      tags_en: (formData.get('tags_en') as string || '').split(',').map(s => s.trim()).filter(Boolean) || null,
-      tags_es: (formData.get('tags_es') as string || '').split(',').map(s => s.trim()).filter(Boolean) || null,
-      tags_fr: (formData.get('tags_fr') as string || '').split(',').map(s => s.trim()).filter(Boolean) || null,
+      id: formData.id || undefined,
+      title: formData.title!,
+      lat: formData.lat!,
+      lng: formData.lng!,
+      radius_m: formData.radius_m || 60,
+      text: formData.text || null,
+      image_url: formData.image_url || null,
+      audio_url: formData.audio_url || null,
+      tags: processTags((formData.tags || []).join(',')),
+      published: formData.published !== false,
+      title_en: formData.title_en || null,
+      title_es: formData.title_es || null,
+      title_fr: formData.title_fr || null,
+      text_en: formData.text_en || null,
+      text_es: formData.text_es || null,
+      text_fr: formData.text_fr || null,
+      tags_en: processTags((formData.tags_en || []).join(',')) || null,
+      tags_es: processTags((formData.tags_es || []).join(',')) || null,
+      tags_fr: processTags((formData.tags_fr || []).join(',')) || null,
     };
 
     try {
-      setLoading(true);
+      setSaving(true);
       const method = editingPoi ? 'PATCH' : 'POST';
       await apiCall(method, payload);
       
@@ -147,11 +216,7 @@ export default function Backoffice() {
         description: `${payload.title} foi ${editingPoi ? 'atualizado' : 'criado'} com sucesso`,
       });
       
-      setEditingPoi(null);
-      const form = e.currentTarget;
-      if (form) {
-        form.reset();
-      }
+      resetForm();
       await loadPOIs();
     } catch (error) {
       toast({
@@ -160,11 +225,11 @@ export default function Backoffice() {
         variant: "destructive",
       });
     } finally {
-      setLoading(false);
+      setSaving(false);
     }
-  };
+  }, [formData, editingPoi, validateForm, processTags, apiCall, toast, loadPOIs]);
 
-  const handleDeletePoi = async (poi: POI) => {
+  const handleDeletePoi = useCallback(async (poi: POI) => {
     if (!confirm(`Apagar "${poi.title}"?`)) return;
     
     try {
@@ -174,6 +239,12 @@ export default function Backoffice() {
         title: "POI apagado",
         description: `${poi.title} foi removido com sucesso`,
       });
+      
+      // If we're editing the deleted POI, clear the form
+      if (editingPoi?.id === poi.id) {
+        resetForm();
+      }
+      
       await loadPOIs();
     } catch (error) {
       toast({
@@ -184,12 +255,64 @@ export default function Backoffice() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [apiCall, toast, loadPOIs, editingPoi]);
 
-  const fillForm = (poi: POI) => {
+  // Reset form to initial state
+  const resetForm = useCallback(() => {
+    setEditingPoi(null);
+    setFormData(getInitialFormState());
+    setValidationErrors({});
+    setFormKey(prev => prev + 1); // Force re-render
+  }, []);
+
+  // Fill form with POI data for editing
+  const fillForm = useCallback((poi: POI) => {
     setEditingPoi(poi);
+    setFormData({
+      id: poi.id,
+      title: poi.title,
+      lat: poi.lat,
+      lng: poi.lng,
+      radius_m: poi.radius_m,
+      text: poi.text || '',
+      image_url: poi.image_url || '',
+      audio_url: poi.audio_url || '',
+      tags: poi.tags || [],
+      published: poi.published,
+      title_en: poi.title_en || '',
+      title_es: poi.title_es || '',
+      title_fr: poi.title_fr || '',
+      text_en: poi.text_en || '',
+      text_es: poi.text_es || '',
+      text_fr: poi.text_fr || '',
+      tags_en: poi.tags_en || [],
+      tags_es: poi.tags_es || [],
+      tags_fr: poi.tags_fr || []
+    });
+    setValidationErrors({});
+    setFormKey(prev => prev + 1); // Force re-render
     window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
+  }, []);
+
+  // Update form field
+  const updateFormField = useCallback((field: keyof POI, value: any) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
+    // Clear validation error for this field
+    if (validationErrors[field]) {
+      setValidationErrors(prev => {
+        const newErrors = { ...prev };
+        delete newErrors[field];
+        return newErrors;
+      });
+    }
+  }, [validationErrors]);
+
+  // Load POIs on mount
+  useEffect(() => {
+    if (isAuthenticated) {
+      loadPOIs();
+    }
+  }, [isAuthenticated, loadPOIs]);
 
   if (!isAuthenticated) {
     return (
@@ -204,8 +327,8 @@ export default function Backoffice() {
               <Input
                 id="password"
                 type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                value={authPassword}
+                onChange={(e) => setAuthPassword(e.target.value)}
                 placeholder="Digite a password"
                 onKeyPress={(e) => e.key === 'Enter' && handleLogin()}
               />
@@ -213,7 +336,7 @@ export default function Backoffice() {
             <Button 
               onClick={handleLogin} 
               className="w-full" 
-              disabled={loading || !password}
+              disabled={loading || !authPassword}
             >
               {loading ? "Entrando..." : "Entrar"}
             </Button>
@@ -242,32 +365,43 @@ export default function Backoffice() {
             <CardTitle>{editingPoi ? 'Editar POI' : 'Criar POI'}</CardTitle>
           </CardHeader>
           <CardContent>
-            <form onSubmit={handleSavePoi} className="space-y-4">
+            <form key={formKey} onSubmit={handleSavePoi} className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="id">ID</Label>
                   <Input
                     id="id"
                     name="id"
-                    defaultValue={editingPoi?.id || ''}
+                    value={formData.id || ''}
+                    onChange={(e) => updateFormField('id', e.target.value)}
                     placeholder="Auto-gerado se vazio"
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="title">Título *</Label>
+                  <Label htmlFor="title" className="flex items-center gap-1">
+                    Título *
+                    {validationErrors.title && (
+                      <AlertCircle className="w-4 h-4 text-destructive" />
+                    )}
+                  </Label>
                   <Input
                     id="title"
                     name="title"
-                    defaultValue={editingPoi?.title || ''}
+                    value={formData.title || ''}
+                    onChange={(e) => updateFormField('title', e.target.value)}
                     placeholder="Título do POI"
-                    required
+                    className={validationErrors.title ? 'border-destructive' : ''}
                   />
+                  {validationErrors.title && (
+                    <p className="text-sm text-destructive">{validationErrors.title}</p>
+                  )}
                 </div>
                 <div className="flex items-center space-x-2 pt-8">
                   <Checkbox
                     id="published"
                     name="published"
-                    defaultChecked={editingPoi?.published ?? true}
+                    checked={formData.published !== false}
+                    onCheckedChange={(checked) => updateFormField('published', checked)}
                   />
                   <Label htmlFor="published">Publicado</Label>
                 </div>
@@ -275,38 +409,66 @@ export default function Backoffice() {
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="lat">Latitude *</Label>
+                  <Label htmlFor="lat" className="flex items-center gap-1">
+                    Latitude *
+                    {validationErrors.lat && (
+                      <AlertCircle className="w-4 h-4 text-destructive" />
+                    )}
+                  </Label>
                   <Input
                     id="lat"
                     name="lat"
                     type="number"
                     step="any"
-                    defaultValue={editingPoi?.lat || ''}
+                    value={formData.lat || ''}
+                    onChange={(e) => updateFormField('lat', Number(e.target.value))}
                     placeholder="ex: 39.4035"
-                    required
+                    className={validationErrors.lat ? 'border-destructive' : ''}
                   />
+                  {validationErrors.lat && (
+                    <p className="text-sm text-destructive">{validationErrors.lat}</p>
+                  )}
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="lng">Longitude *</Label>
+                  <Label htmlFor="lng" className="flex items-center gap-1">
+                    Longitude *
+                    {validationErrors.lng && (
+                      <AlertCircle className="w-4 h-4 text-destructive" />
+                    )}
+                  </Label>
                   <Input
                     id="lng"
                     name="lng"
                     type="number"
                     step="any"
-                    defaultValue={editingPoi?.lng || ''}
+                    value={formData.lng || ''}
+                    onChange={(e) => updateFormField('lng', Number(e.target.value))}
                     placeholder="ex: -9.2067"
-                    required
+                    className={validationErrors.lng ? 'border-destructive' : ''}
                   />
+                  {validationErrors.lng && (
+                    <p className="text-sm text-destructive">{validationErrors.lng}</p>
+                  )}
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="radius_m">Raio (metros)</Label>
+                  <Label htmlFor="radius_m" className="flex items-center gap-1">
+                    Raio (metros)
+                    {validationErrors.radius_m && (
+                      <AlertCircle className="w-4 h-4 text-destructive" />
+                    )}
+                  </Label>
                   <Input
                     id="radius_m"
                     name="radius_m"
                     type="number"
-                    defaultValue={editingPoi?.radius_m || 60}
+                    value={formData.radius_m || 60}
+                    onChange={(e) => updateFormField('radius_m', Number(e.target.value))}
                     placeholder="60"
+                    className={validationErrors.radius_m ? 'border-destructive' : ''}
                   />
+                  {validationErrors.radius_m && (
+                    <p className="text-sm text-destructive">{validationErrors.radius_m}</p>
+                  )}
                 </div>
               </div>
 
@@ -316,7 +478,8 @@ export default function Backoffice() {
                   <Input
                     id="image_url"
                     name="image_url"
-                    defaultValue={editingPoi?.image_url || ''}
+                    value={formData.image_url || ''}
+                    onChange={(e) => updateFormField('image_url', e.target.value)}
                     placeholder="https://..."
                   />
                 </div>
@@ -325,7 +488,8 @@ export default function Backoffice() {
                   <Input
                     id="audio_url"
                     name="audio_url"
-                    defaultValue={editingPoi?.audio_url || ''}
+                    value={formData.audio_url || ''}
+                    onChange={(e) => updateFormField('audio_url', e.target.value)}
                     placeholder="https://..."
                   />
                 </div>
@@ -336,7 +500,8 @@ export default function Backoffice() {
                 <Textarea
                   id="text"
                   name="text"
-                  defaultValue={editingPoi?.text || ''}
+                  value={formData.text || ''}
+                  onChange={(e) => updateFormField('text', e.target.value)}
                   placeholder="Descrição do POI"
                   rows={3}
                 />
@@ -347,7 +512,8 @@ export default function Backoffice() {
                 <Input
                   id="tags"
                   name="tags"
-                  defaultValue={(editingPoi?.tags || []).join(', ')}
+                  value={(formData.tags || []).join(', ')}
+                  onChange={(e) => updateFormField('tags', e.target.value.split(',').map(s => s.trim()).filter(Boolean))}
                   placeholder="fauna, flora, história"
                 />
               </div>
@@ -362,7 +528,8 @@ export default function Backoffice() {
                     <Input
                       id="title_en"
                       name="title_en"
-                      defaultValue={editingPoi?.title_en || ''}
+                      value={formData.title_en || ''}
+                      onChange={(e) => updateFormField('title_en', e.target.value)}
                       placeholder="English title"
                     />
                   </div>
@@ -371,7 +538,8 @@ export default function Backoffice() {
                     <Input
                       id="title_es"
                       name="title_es"
-                      defaultValue={editingPoi?.title_es || ''}
+                      value={formData.title_es || ''}
+                      onChange={(e) => updateFormField('title_es', e.target.value)}
                       placeholder="Título en español"
                     />
                   </div>
@@ -380,7 +548,8 @@ export default function Backoffice() {
                     <Input
                       id="title_fr"
                       name="title_fr"
-                      defaultValue={editingPoi?.title_fr || ''}
+                      value={formData.title_fr || ''}
+                      onChange={(e) => updateFormField('title_fr', e.target.value)}
                       placeholder="Titre en français"
                     />
                   </div>
@@ -392,7 +561,8 @@ export default function Backoffice() {
                     <Textarea
                       id="text_en"
                       name="text_en"
-                      defaultValue={editingPoi?.text_en || ''}
+                      value={formData.text_en || ''}
+                      onChange={(e) => updateFormField('text_en', e.target.value)}
                       placeholder="English description"
                       rows={2}
                     />
@@ -402,7 +572,8 @@ export default function Backoffice() {
                     <Textarea
                       id="text_es"
                       name="text_es"
-                      defaultValue={editingPoi?.text_es || ''}
+                      value={formData.text_es || ''}
+                      onChange={(e) => updateFormField('text_es', e.target.value)}
                       placeholder="Descripción en español"
                       rows={2}
                     />
@@ -412,7 +583,8 @@ export default function Backoffice() {
                     <Textarea
                       id="text_fr"
                       name="text_fr"
-                      defaultValue={editingPoi?.text_fr || ''}
+                      value={formData.text_fr || ''}
+                      onChange={(e) => updateFormField('text_fr', e.target.value)}
                       placeholder="Description en français"
                       rows={2}
                     />
@@ -425,7 +597,8 @@ export default function Backoffice() {
                     <Input
                       id="tags_en"
                       name="tags_en"
-                      defaultValue={(editingPoi?.tags_en || []).join(', ')}
+                      value={(formData.tags_en || []).join(', ')}
+                      onChange={(e) => updateFormField('tags_en', e.target.value.split(',').map(s => s.trim()).filter(Boolean))}
                       placeholder="wildlife, nature"
                     />
                   </div>
@@ -434,7 +607,8 @@ export default function Backoffice() {
                     <Input
                       id="tags_es"
                       name="tags_es"
-                      defaultValue={(editingPoi?.tags_es || []).join(', ')}
+                      value={(formData.tags_es || []).join(', ')}
+                      onChange={(e) => updateFormField('tags_es', e.target.value.split(',').map(s => s.trim()).filter(Boolean))}
                       placeholder="fauna, naturaleza"
                     />
                   </div>
@@ -443,7 +617,8 @@ export default function Backoffice() {
                     <Input
                       id="tags_fr"
                       name="tags_fr"
-                      defaultValue={(editingPoi?.tags_fr || []).join(', ')}
+                      value={(formData.tags_fr || []).join(', ')}
+                      onChange={(e) => updateFormField('tags_fr', e.target.value.split(',').map(s => s.trim()).filter(Boolean))}
                       placeholder="faune, nature"
                     />
                   </div>
@@ -451,18 +626,15 @@ export default function Backoffice() {
               </div>
 
               <div className="flex gap-2">
-                <Button type="submit" disabled={loading}>
-                  {loading ? "Guardando..." : editingPoi ? "Atualizar" : "Criar"}
+                <Button type="submit" disabled={saving || loading}>
+                  {saving ? "Guardando..." : editingPoi ? "Atualizar" : "Criar"}
                 </Button>
                 {editingPoi && (
                   <Button
                     type="button"
                     variant="outline"
-                    onClick={() => {
-                      setEditingPoi(null);
-                      const form = document.querySelector('form') as HTMLFormElement;
-                      form?.reset();
-                    }}
+                    onClick={resetForm}
+                    disabled={saving || loading}
                   >
                     Cancelar
                   </Button>

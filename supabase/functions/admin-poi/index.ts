@@ -2,7 +2,7 @@
 import { serve } from "https://deno.land/std/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
-const ALLOW_ORIGIN = Deno.env.get("ALLOW_ORIGIN") ?? "https://vau.lovable.app";
+const ALLOW_ORIGIN = "*"; // Allow all origins for development
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
 const SERVICE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
 const ADMIN_PASSWORD = Deno.env.get("ADMIN_PASSWORD")!;

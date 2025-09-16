@@ -7,7 +7,7 @@ const resources = {
   pt: {
     translation: {
       // Landing page
-      "appTitle": "Vau Explorer",
+      "appTitle": "Geo Vau",
       "appDescription": "Descobre micro-histórias baseadas na localização ao redor da Lagoa de Óbidos. Caminha, explora e deixa os lugares contarem as suas histórias.",
       "openApp": "Abrir aplicação",
       
@@ -55,7 +55,7 @@ const resources = {
   en: {
     translation: {
       // Landing page
-      "appTitle": "Vau Explorer",
+      "appTitle": "Geo Vau",
       "appDescription": "Discover location-based micro-stories around Óbidos Lagoon. Walk, explore and let places tell their stories.",
       "openApp": "Open application",
       
@@ -103,7 +103,7 @@ const resources = {
   es: {
     translation: {
       // Landing page
-      "appTitle": "Vau Explorer",
+      "appTitle": "Geo Vau",
       "appDescription": "Descubre micro-historias basadas en la ubicación alrededor de la Laguna de Óbidos. Camina, explora y deja que los lugares cuenten sus historias.",
       "openApp": "Abrir aplicación",
       
@@ -151,7 +151,7 @@ const resources = {
   fr: {
     translation: {
       // Landing page
-      "appTitle": "Vau Explorer",
+      "appTitle": "Geo Vau",
       "appDescription": "Découvrez des micro-histoires basées sur la localisation autour de la lagune d'Óbidos. Marchez, explorez et laissez les lieux raconter leurs histoires.",
       "openApp": "Ouvrir l'application",
       

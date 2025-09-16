@@ -1,4 +1,4 @@
-# Vau Explorer - Test Script
+# Geo Vau - Test Script
 
 ## 2-Minute Quick Test
 
@@ -10,7 +10,7 @@
 ### Test Steps
 
 **Step 1: Landing Page**
-1. Open `/` → verify landing page loads with "Vau Explorer" title
+1. Open `/` → verify landing page loads with "Geo Vau" title
 2. Click "Abrir aplicação" → should navigate to `/app`
 
 **Step 2: Main App Flow**

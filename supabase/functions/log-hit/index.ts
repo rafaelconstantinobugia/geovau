@@ -58,10 +58,18 @@ serve(async (req) => {
       });
     }
 
-    // Get client IP
-    const clientIP = req.headers.get('x-forwarded-for') || 
-                    req.headers.get('x-real-ip') || 
-                    '127.0.0.1';
+    // Get client IP - handle comma-separated IPs from proxies
+    let clientIP = req.headers.get('x-forwarded-for') || 
+                   req.headers.get('x-real-ip') || 
+                   '127.0.0.1';
+    
+    // x-forwarded-for can contain multiple IPs (client, proxy1, proxy2...)
+    // Take the first one (the original client IP)
+    if (clientIP.includes(',')) {
+      clientIP = clientIP.split(',')[0].trim();
+    }
+    
+    console.log('Parsed client IP:', clientIP);
 
     // Rate limiting: check hits from this IP in the last minute
     const { data: rateLimitData, error: rateLimitError } = await supabase

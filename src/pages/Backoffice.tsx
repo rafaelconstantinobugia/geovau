@@ -148,7 +148,10 @@ export default function Backoffice() {
       });
       
       setEditingPoi(null);
-      e.currentTarget.reset();
+      const form = e.currentTarget;
+      if (form) {
+        form.reset();
+      }
       await loadPOIs();
     } catch (error) {
       toast({

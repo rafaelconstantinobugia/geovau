@@ -101,8 +101,10 @@ const Map: React.FC<MapProps> = ({ pois, userLocation, onPOIClick }) => {
           document.head.appendChild(style);
         }
 
-        // Set map as ready
-        setMapReady(true);
+        // Wait for map to be fully loaded before setting as ready
+        map.current.on('load', () => {
+          setMapReady(true);
+        });
 
       } catch (error) {
         console.error('Failed to initialize map:', error);

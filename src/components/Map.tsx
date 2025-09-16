@@ -1,6 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
+import { useTranslation } from 'react-i18next';
 import { supabase } from "@/integrations/supabase/client";
 
 interface POI {
@@ -32,6 +33,7 @@ const Map: React.FC<MapProps> = ({ pois, userLocation, onPOIClick }) => {
   const map = useRef<mapboxgl.Map | null>(null);
   const markers = useRef<mapboxgl.Marker[]>([]);
   const userMarker = useRef<mapboxgl.Marker | null>(null);
+  const { t } = useTranslation();
 
   useEffect(() => {
     if (!mapContainer.current) return;
@@ -90,8 +92,8 @@ const Map: React.FC<MapProps> = ({ pois, userLocation, onPOIClick }) => {
           mapContainer.current.innerHTML = `
             <div class="flex items-center justify-center h-full bg-muted text-muted-foreground">
               <div class="text-center">
-                <p>Mapa indisponível</p>
-                <p class="text-sm">Configure MAPBOX_PUBLIC_TOKEN</p>
+                <p>${t('mapUnavailable')}</p>
+                <p class="text-sm">${t('configureMapbox')}</p>
               </div>
             </div>
           `;
@@ -154,7 +156,7 @@ const Map: React.FC<MapProps> = ({ pois, userLocation, onPOIClick }) => {
         .setHTML(`
           <div class="p-2">
             <h3 class="font-semibold text-sm text-white">${poi.title}</h3>
-            <p class="text-xs text-gray-300 mt-1">Clica para abrir</p>
+            <p class="text-xs text-gray-300 mt-1">${t('clickToOpen')}</p>
           </div>
         `);
 
@@ -218,7 +220,7 @@ const Map: React.FC<MapProps> = ({ pois, userLocation, onPOIClick }) => {
         <div className="absolute inset-0 flex items-center justify-center bg-background/80">
           <div className="text-center">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
-            <p className="text-muted-foreground">A carregar pontos de interesse...</p>
+            <p className="text-muted-foreground">{t('loadingPOIs')}</p>
           </div>
         </div>
       )}

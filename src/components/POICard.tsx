@@ -3,6 +3,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { X, MapPin, Volume2 } from "lucide-react";
+import { useTranslation } from 'react-i18next';
 
 interface POI {
   id: string;
@@ -43,6 +44,7 @@ const calculateDistance = (lat1: number, lng1: number, lat2: number, lng2: numbe
 };
 
 const POICard: React.FC<POICardProps> = ({ poi, userLocation, onClose, onOpen }) => {
+  const { t } = useTranslation();
   const distance = userLocation 
     ? calculateDistance(userLocation.lat, userLocation.lng, poi.lat, poi.lng)
     : null;
@@ -80,8 +82,8 @@ const POICard: React.FC<POICardProps> = ({ poi, userLocation, onClose, onOpen })
             <MapPin className="h-4 w-4 text-muted-foreground" />
             <CardDescription>
               {distance !== null 
-                ? `${Math.round(distance)}m de distância`
-                : 'Localização desconhecida'
+                ? `${Math.round(distance)}m ${t('distance').toLowerCase()}`
+                : t('coordinates')
               }
             </CardDescription>
           </div>
@@ -126,13 +128,13 @@ const POICard: React.FC<POICardProps> = ({ poi, userLocation, onClose, onOpen })
               className="w-full"
             >
               <Volume2 className="h-4 w-4 mr-2" />
-              Reproduzir áudio
+              {t('playAudio')}
             </Button>
           )}
 
           <div className="pt-2 border-t border-border">
             <p className="text-xs text-muted-foreground text-center">
-              Coordenadas: {poi.lat.toFixed(4)}, {poi.lng.toFixed(4)}
+              {t('coordinates')}: {poi.lat.toFixed(4)}, {poi.lng.toFixed(4)}
             </p>
           </div>
         </CardContent>

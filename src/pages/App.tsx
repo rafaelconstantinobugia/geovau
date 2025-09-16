@@ -2,8 +2,10 @@ import { useState, useEffect, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
+import { useTranslation } from 'react-i18next';
 import Map from "@/components/Map";
 import POICard from "@/components/POICard";
+import LanguageSelector from "@/components/LanguageSelector";
 import { supabase } from "@/integrations/supabase/client";
 
 interface POI {
@@ -48,6 +50,7 @@ const App = () => {
   const [triggeredPOIs, setTriggeredPOIs] = useState<Set<string>>(new Set());
   
   const { toast } = useToast();
+  const { t, i18n } = useTranslation();
 
   // Demo mode location (near Covão dos Mezaranhos)
   const DEMO_LOCATION = { lat: 39.4087, lng: -9.2256 };
@@ -76,19 +79,18 @@ const App = () => {
     }
   }, [userLocation]);
 
-  // Fetch POIs from Supabase
+  // Fetch POIs from Supabase using localized function
   useEffect(() => {
     const fetchPOIs = async () => {
       try {
         const { data, error } = await supabase
-          .from('pois_public')
-          .select('*');
+          .rpc('get_pois_localized', { lang: i18n.language });
         
         if (error) {
           console.error('Error fetching POIs:', error);
           toast({
-            title: "Erro",
-            description: "Não foi possível carregar os pontos de interesse",
+            title: t('error'),
+            description: t('loadPOIError'),
             variant: "destructive"
           });
           return;
@@ -108,15 +110,15 @@ const App = () => {
       } catch (error) {
         console.error('Failed to fetch POIs:', error);
         toast({
-          title: "Erro",
-          description: "Falha na conexão com o servidor",
+          title: t('error'),
+          description: t('connectionError'),
           variant: "destructive"
         });
       }
     };
 
     fetchPOIs();
-  }, [toast]);
+  }, [toast, t, i18n.language]);
 
   // Check for POIs within radius when location changes
   useEffect(() => {
@@ -134,7 +136,7 @@ const App = () => {
         logHit(poi, 'enter_radius', distance);
         
         toast({
-          title: "Ponto de interesse próximo!",
+          title: t('nearbyPOI'),
           description: `${poi.title} - ${Math.round(distance)}m`,
         });
       }
@@ -144,8 +146,8 @@ const App = () => {
   const enableLocation = () => {
     if (!navigator.geolocation) {
       toast({
-        title: "Erro",
-        description: "Geolocalização não suportada neste dispositivo",
+        title: t('error'),
+        description: t('geolocationNotSupported'),
         variant: "destructive"
       });
       return;
@@ -161,16 +163,16 @@ const App = () => {
       console.log('Location enabled:', newLocation);
       
       toast({
-        title: "Localização ativada",
-        description: "A aplicação está agora a monitorizar a tua localização"
+        title: t('locationEnabled'),
+        description: t('locationEnabledDesc')
       });
     };
 
     const errorCallback = (error: GeolocationPositionError) => {
       console.error('Geolocation error:', error);
       toast({
-        title: "Erro de localização",
-        description: "Não foi possível aceder à localização. Verifica as permissões.",
+        title: t('locationError'),
+        description: t('locationErrorDesc'),
         variant: "destructive"
       });
     };
@@ -197,8 +199,8 @@ const App = () => {
     console.log('Location disabled');
     
     toast({
-      title: "Localização desativada",
-      description: "A monitorização foi pausada"
+      title: t('locationDisabled'),
+      description: t('locationDisabledDesc')
     });
   };
 
@@ -214,8 +216,8 @@ const App = () => {
     }
     
     toast({
-      title: "Modo demo ativado",
-      description: "Localização simulada no Covão dos Mezaranhos"
+      title: t('demoModeEnabled'),
+      description: t('demoModeEnabledDesc')
     });
   };
 
@@ -264,7 +266,7 @@ const App = () => {
       <div className="border-b border-border bg-card p-4">
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div className="flex items-center gap-4">
-            <h1 className="text-xl font-semibold text-foreground">Vau Explorer</h1>
+            <h1 className="text-xl font-semibold text-foreground">{t('appTitle')}</h1>
             {locationEnabled ? (
               <Button 
                 onClick={disableLocation}
@@ -272,7 +274,7 @@ const App = () => {
                 size="sm"
                 className="border-geofence-active text-geofence-active hover:bg-geofence-active hover:text-background"
               >
-                Localização ativa
+                {t('locationActive')}
               </Button>
             ) : (
               <Button 
@@ -280,7 +282,7 @@ const App = () => {
                 size="sm"
                 className="bg-primary text-primary-foreground hover:bg-primary/90"
               >
-                Ativar localização
+                {t('enableLocation')}
               </Button>
             )}
             {process.env.NODE_ENV === 'development' && (
@@ -289,14 +291,15 @@ const App = () => {
                 variant="secondary"
                 size="sm"
               >
-                Demo Mode
+                {t('demoMode')}
               </Button>
             )}
+            <LanguageSelector />
           </div>
           
           {/* Tag filters */}
           <div className="flex flex-wrap items-center gap-2">
-            <span className="text-sm text-muted-foreground">Filtros:</span>
+            <span className="text-sm text-muted-foreground">{t('filters')}</span>
             {availableTags.map(tag => (
               <Badge
                 key={tag}

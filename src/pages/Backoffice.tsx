@@ -7,7 +7,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
-import { Trash2, Edit, RefreshCw, Eye, EyeOff, AlertCircle } from 'lucide-react';
+import { Trash2, Edit, RefreshCw, Eye, EyeOff, AlertCircle, MapPin } from 'lucide-react';
+import BackofficeMap from '@/components/BackofficeMap';
 
 interface POI {
   id: string;
@@ -67,6 +68,7 @@ export default function Backoffice() {
   const [formData, setFormData] = useState<Partial<POI>>(getInitialFormState());
   const [formKey, setFormKey] = useState(0); // For forcing re-render
   const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
+  const [showMap, setShowMap] = useState(false);
   const { toast } = useToast();
 
   // Store auth header securely
@@ -307,6 +309,18 @@ export default function Backoffice() {
     }
   }, [validationErrors]);
 
+  // Handle coordinates change from map
+  const handleCoordinatesChange = useCallback((lat: number, lng: number) => {
+    setFormData(prev => ({ ...prev, lat, lng }));
+    // Clear validation errors for coordinates
+    setValidationErrors(prev => {
+      const newErrors = { ...prev };
+      delete newErrors.lat;
+      delete newErrors.lng;
+      return newErrors;
+    });
+  }, []);
+
   // Load POIs on mount
   useEffect(() => {
     if (isAuthenticated) {
@@ -415,16 +429,27 @@ export default function Backoffice() {
                       <AlertCircle className="w-4 h-4 text-destructive" />
                     )}
                   </Label>
-                  <Input
-                    id="lat"
-                    name="lat"
-                    type="number"
-                    step="any"
-                    value={formData.lat || ''}
-                    onChange={(e) => updateFormField('lat', Number(e.target.value))}
-                    placeholder="ex: 39.4035"
-                    className={validationErrors.lat ? 'border-destructive' : ''}
-                  />
+                  <div className="flex gap-2">
+                    <Input
+                      id="lat"
+                      name="lat"
+                      type="number"
+                      step="any"
+                      value={formData.lat || ''}
+                      onChange={(e) => updateFormField('lat', Number(e.target.value))}
+                      placeholder="ex: 39.4035"
+                      className={validationErrors.lat ? 'border-destructive' : ''}
+                    />
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setShowMap(!showMap)}
+                      className="flex-shrink-0"
+                    >
+                      <MapPin className="w-4 h-4" />
+                    </Button>
+                  </div>
                   {validationErrors.lat && (
                     <p className="text-sm text-destructive">{validationErrors.lat}</p>
                   )}
@@ -471,6 +496,34 @@ export default function Backoffice() {
                   )}
                 </div>
               </div>
+
+              {/* Map for coordinate selection */}
+              {showMap && (
+                <div className="space-y-2">
+                  <Label>Selecionar Coordenadas no Mapa</Label>
+                  <BackofficeMap
+                    lat={formData.lat || 39.4070}
+                    lng={formData.lng || -9.2200}
+                    onCoordinatesChange={handleCoordinatesChange}
+                    isOpen={showMap}
+                  />
+                  <div className="flex gap-2">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setShowMap(false)}
+                    >
+                      Fechar Mapa
+                    </Button>
+                    {formData.lat && formData.lng && (
+                      <p className="text-sm text-muted-foreground flex items-center">
+                        Coordenadas: {formData.lat.toFixed(5)}, {formData.lng.toFixed(5)}
+                      </p>
+                    )}
+                  </div>
+                </div>
+              )}
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">

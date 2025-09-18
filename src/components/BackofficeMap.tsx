@@ -44,7 +44,7 @@ const BackofficeMap: React.FC<BackofficeMapProps> = ({
           style: 'mapbox://styles/mapbox/light-v11',
           center: [lng || -9.2200, lat || 39.4070],
           zoom: 15,
-          minZoom: 5,
+          minZoom: 10,
           maxZoom: 20,
         });
 

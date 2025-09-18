@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { X, MapPin, Volume2 } from "lucide-react";
 import { useTranslation } from 'react-i18next';
+import { getTagColor } from "@/lib/tagColors";
 
 interface POI {
   id: string;
@@ -114,7 +115,12 @@ const POICard: React.FC<POICardProps> = ({ poi, userLocation, onClose, onOpen })
           {poi.tags && poi.tags.length > 0 && (
             <div className="flex flex-wrap gap-2">
               {poi.tags.map(tag => (
-                <Badge key={tag} variant="secondary" className="text-xs">
+                <Badge 
+                  key={tag} 
+                  variant="secondary" 
+                  className="text-xs text-white border-0" 
+                  style={{ backgroundColor: getTagColor(tag) }}
+                >
                   {tag}
                 </Badge>
               ))}

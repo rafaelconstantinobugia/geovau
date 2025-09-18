@@ -3,6 +3,7 @@ import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import { useTranslation } from 'react-i18next';
 import { supabase } from "@/integrations/supabase/client";
+import { getDominantTagColor } from "@/lib/tagColors";
 
 interface POI {
   id: string;
@@ -63,7 +64,7 @@ const Map: React.FC<MapProps> = ({ pois, userLocation, onPOIClick }) => {
           style: 'mapbox://styles/mapbox/dark-v11',
           center: [-9.2200, 39.4070], // Centered on Vau/Lagoa de Óbidos
           zoom: 15,
-          minZoom: 14, // Force detail before interacting
+          minZoom: 10, // Allow more zoom out
           maxZoom: 19,
           pitch: 0,
         });
@@ -178,33 +179,35 @@ const Map: React.FC<MapProps> = ({ pois, userLocation, onPOIClick }) => {
 
     // Add POI markers
     pois.forEach(poi => {
+      // Get color based on tags
+      const markerColor = getDominantTagColor(poi.tags);
+      
       // Create custom marker element with precise anchoring
       const el = document.createElement('div');
       el.className = 'poi-marker';
       el.style.cssText = `
-        background-color: #ff6a00;
+        background-color: ${markerColor};
         width: 32px;
         height: 32px;
         border-radius: 50%;
         border: 3px solid #ffffff;
         cursor: pointer;
-        box-shadow: 0 4px 12px rgba(255, 106, 0, 0.6);
+        box-shadow: 0 4px 12px ${markerColor}66;
         transition: all 0.2s ease;
-        position: relative;
+        position: absolute;
         z-index: 1000;
-        transform: translate(-50%, -50%);
         margin: 0;
         padding: 0;
       `;
       
       el.addEventListener('mouseenter', () => {
         el.style.transform = 'scale(1.3)';
-        el.style.boxShadow = '0 6px 20px rgba(255, 106, 0, 0.8)';
+        el.style.boxShadow = `0 6px 20px ${markerColor}99`;
       });
       
       el.addEventListener('mouseleave', () => {
         el.style.transform = 'scale(1)';
-        el.style.boxShadow = '0 4px 12px rgba(255, 106, 0, 0.6)';
+        el.style.boxShadow = `0 4px 12px ${markerColor}66`;
       });
 
       const marker = new mapboxgl.Marker({

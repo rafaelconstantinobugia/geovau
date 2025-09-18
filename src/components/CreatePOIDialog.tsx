@@ -9,6 +9,7 @@ import { X } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useTranslation } from 'react-i18next';
 import { supabase } from "@/integrations/supabase/client";
+import { getTagColor } from "@/lib/tagColors";
 
 interface CreatePOIDialogProps {
   userLocation: { lat: number; lng: number } | null;
@@ -207,7 +208,12 @@ const CreatePOIDialog = ({ userLocation, onPOICreated, children }: CreatePOIDial
             <Label>{t('tags')}</Label>
             <div className="flex flex-wrap gap-2 mb-2">
               {tags.map(tag => (
-                <Badge key={tag} variant="secondary" className="cursor-pointer">
+                <Badge 
+                  key={tag} 
+                  variant="secondary" 
+                  className="cursor-pointer text-white border-0"
+                  style={{ backgroundColor: getTagColor(tag) }}
+                >
                   {tag}
                   <X 
                     className="ml-1 h-3 w-3" 

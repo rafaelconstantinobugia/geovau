@@ -8,8 +8,15 @@ const resources = {
     translation: {
       // Landing page
       "appTitle": "Geo Vau",
-      "appDescription": "Descobre micro-histórias baseadas na localização ao redor da Lagoa de Óbidos. Caminha, explora e deixa os lugares contarem as suas histórias.",
-      "openApp": "Abrir aplicação",
+      "appDescription": "Descobre a Lagoa de Óbidos com histórias que se desbloqueiam à medida que caminhas.",
+      "openApp": "Abrir mapa",
+      
+      // Instructions section
+      "instructions": "Ativa a localização, passeia junto à Lagoa e recebe curiosidades sobre aves, plantas e tradições locais.",
+      
+      // Footer
+      "contact": "info@rafaelconstantinobugia.pt",
+      "projectInfo": "Projeto piloto - GeoVau - feedback bem-vindo.",
       
       // App header
       "locationActive": "Localização ativa",
@@ -84,8 +91,15 @@ const resources = {
     translation: {
       // Landing page
       "appTitle": "Geo Vau",
-      "appDescription": "Discover location-based micro-stories around Óbidos Lagoon. Walk, explore and let places tell their stories.",
-      "openApp": "Open application",
+      "appDescription": "Explore the Óbidos Lagoon with stories that unlock as you walk.",
+      "openApp": "Start exploring",
+      
+      // Instructions section
+      "instructions": "Turn on location, walk by the Lagoon, and receive stories about birds, plants and traditions.",
+      
+      // Footer
+      "contact": "info@rafaelconstantinobugia.pt",
+      "projectInfo": "Pilot project - GeoVau - feedback welcome.",
       
       // App header
       "locationActive": "Location active",
@@ -160,8 +174,15 @@ const resources = {
     translation: {
       // Landing page
       "appTitle": "Geo Vau",
-      "appDescription": "Descubre micro-historias basadas en la ubicación alrededor de la Laguna de Óbidos. Camina, explora y deja que los lugares cuenten sus historias.",
-      "openApp": "Abrir aplicación",
+      "appDescription": "Explora la Laguna de Óbidos con historias que se desbloquean mientras caminas.",
+      "openApp": "Comenzar a explorar",
+      
+      // Instructions section
+      "instructions": "Activa la ubicación, camina junto a la Laguna y recibe curiosidades sobre aves, plantas y tradiciones locales.",
+      
+      // Footer
+      "contact": "info@rafaelconstantinobugia.pt",
+      "projectInfo": "Proyecto piloto - GeoVau - comentarios bienvenidos.",
       
       // App header
       "locationActive": "Ubicación activa",
@@ -236,8 +257,15 @@ const resources = {
     translation: {
       // Landing page
       "appTitle": "Geo Vau",
-      "appDescription": "Découvrez des micro-histoires basées sur la localisation autour de la lagune d'Óbidos. Marchez, explorez et laissez les lieux raconter leurs histoires.",
-      "openApp": "Ouvrir l'application",
+      "appDescription": "Explorez la lagune d'Óbidos avec des histoires qui se débloquent au fur et à mesure que vous marchez.",
+      "openApp": "Commencer à explorer",
+      
+      // Instructions section
+      "instructions": "Activez la localisation, promenez-vous près de la lagune et recevez des curiosités sur les oiseaux, les plantes et les traditions locales.",
+      
+      // Footer
+      "contact": "info@rafaelconstantinobugia.pt",
+      "projectInfo": "Projet pilote - GeoVau - commentaires bienvenus.",
       
       // App header
       "locationActive": "Localisation active",

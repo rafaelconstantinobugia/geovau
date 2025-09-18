@@ -63,7 +63,7 @@ const POICard: React.FC<POICardProps> = ({ poi, userLocation, onClose, onOpen })
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/50 backdrop-blur-sm p-4 sm:items-center">
+    <div className="fixed inset-0 z-[2000] flex items-end justify-center bg-black/50 backdrop-blur-sm p-4 sm:items-center">
       <Card className="w-full max-w-md max-h-[80vh] overflow-hidden bg-card border-border shadow-2xl animate-in slide-in-from-bottom-4 duration-300">
         <CardHeader className="relative pb-4">
           <Button

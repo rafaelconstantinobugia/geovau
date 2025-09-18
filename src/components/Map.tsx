@@ -16,6 +16,7 @@ interface POI {
   image_url: string | null;
   audio_url: string | null;
   tags: string[];
+  color?: string;
 }
 
 interface UserLocation {
@@ -179,8 +180,8 @@ const Map: React.FC<MapProps> = ({ pois, userLocation, onPOIClick }) => {
 
     // Add POI markers
     pois.forEach(poi => {
-      // Get color based on tags
-      const markerColor = getDominantTagColor(poi.tags);
+      // Use custom color if available, otherwise use tag-based color
+      const markerColor = poi.color || getDominantTagColor(poi.tags);
       
       // Create custom marker element with precise anchoring
       const el = document.createElement('div');

@@ -20,6 +20,7 @@ interface POI {
   image_url?: string;
   audio_url?: string;
   tags: string[];
+  color?: string;
   published: boolean;
   updated_at: string;
   title_en?: string;
@@ -46,6 +47,7 @@ const getInitialFormState = (): Partial<POI> => ({
   image_url: '',
   audio_url: '',
   tags: [],
+  color: '#FF6A00',
   published: true,
   title_en: '',
   title_es: '',
@@ -569,6 +571,26 @@ export default function Backoffice() {
                   onChange={(e) => updateFormField('tags', e.target.value.split(',').map(s => s.trim()).filter(Boolean))}
                   placeholder="fauna, flora, história"
                 />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="color">Cor do POI</Label>
+                <div className="flex gap-2">
+                  <Input
+                    id="color"
+                    name="color"
+                    type="color"
+                    value={formData.color || '#FF6A00'}
+                    onChange={(e) => updateFormField('color', e.target.value)}
+                    className="w-20 h-10 p-1 rounded cursor-pointer"
+                  />
+                  <Input
+                    value={formData.color || '#FF6A00'}
+                    onChange={(e) => updateFormField('color', e.target.value)}
+                    placeholder="#FF6A00"
+                    className="flex-1"
+                  />
+                </div>
               </div>
 
               {/* Translations */}

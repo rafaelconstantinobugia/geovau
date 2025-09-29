@@ -195,10 +195,6 @@ const Map: React.FC<MapProps> = ({ pois, userLocation, onPOIClick }) => {
         cursor: pointer;
         box-shadow: 0 4px 12px ${markerColor}66;
         transition: all 0.2s ease;
-        position: absolute;
-        z-index: 1000;
-        margin: 0;
-        padding: 0;
       `;
       
       el.addEventListener('mouseenter', () => {
@@ -261,9 +257,6 @@ const Map: React.FC<MapProps> = ({ pois, userLocation, onPOIClick }) => {
         border: 3px solid hsl(0 0% 100%);
         box-shadow: 0 0 0 3px rgba(0, 255, 0, 0.3);
         animation: pulse 2s infinite;
-        transform: translate(-50%, -50%);
-        margin: 0;
-        padding: 0;
       `;
 
       userMarker.current = new mapboxgl.Marker({

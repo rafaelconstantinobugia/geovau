@@ -8,7 +8,7 @@ import i18n from './lib/i18n';
 import Index from "./pages/Index";
 import AppPage from "./pages/App";
 import Admin from "./pages/Admin";
-import Backoffice from "./pages/Backoffice";
+import Reports from "./pages/Reports";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -24,7 +24,7 @@ const App = () => (
             <Route path="/" element={<Index />} />
             <Route path="/app" element={<AppPage />} />
             <Route path="/admin" element={<Admin />} />
-            <Route path="/backoffice" element={<Backoffice />} />
+            <Route path="/reports" element={<Reports />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>

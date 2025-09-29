@@ -22,6 +22,7 @@ interface POI {
   image_url: string | null;
   audio_url: string | null;
   tags: string[];
+  color?: string;
 }
 
 interface UserLocation {

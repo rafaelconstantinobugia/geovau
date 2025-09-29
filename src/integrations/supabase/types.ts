@@ -71,6 +71,7 @@ export type Database = {
       pois: {
         Row: {
           audio_url: string | null
+          color: string | null
           id: string
           image_url: string | null
           lat: number
@@ -95,6 +96,7 @@ export type Database = {
         }
         Insert: {
           audio_url?: string | null
+          color?: string | null
           id: string
           image_url?: string | null
           lat: number
@@ -119,6 +121,7 @@ export type Database = {
         }
         Update: {
           audio_url?: string | null
+          color?: string | null
           id?: string
           image_url?: string | null
           lat?: number
